@@ -1,9 +1,10 @@
+import AppRouter from "./AppRouter";
 
 
 function App() {
   return (
-    <div className="App">
-      firebase
+    <div>
+<AppRouter />
     </div>
   );
 }
