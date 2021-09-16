@@ -3,6 +3,9 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 
 const Auth = () => {
@@ -10,6 +13,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [newAcc, setNewAcc] = useState(true);
   const [error, setError] = useState("");
+
   const onChange = (e) => {
     if (e.target.name === "email") {
       setEmail(e.target.value);
@@ -17,26 +21,38 @@ const Auth = () => {
       setPassword(e.target.value);
     }
   };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const auth = getAuth();
     try {
       if (newAcc) {
-        const data = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        console.log(data);
+        await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        const data = await signInWithEmailAndPassword(auth, email, password);
-        console.log(data);
+        await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (e) {
       setError(e.message);
     }
   };
+
   const toggleAccount = () => setNewAcc((prev) => !prev);
+
+  const onSocialClick = async (e) => {
+    const auth = getAuth();
+    try {
+      if (e.target.name === "google") {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } else if (e.target.name === "github") {
+        const provider = new GithubAuthProvider();
+        await signInWithPopup(auth, provider);
+      }
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -59,8 +75,12 @@ const Auth = () => {
         <input type="submit" value={newAcc ? "Create New Account" : "Log In"} />
       </form>
       <div>
-        <button>Log In with Google</button>
-        <button>Log In with Github</button>
+        <button name="google" onClick={onSocialClick}>
+          Log In with Google
+        </button>
+        <button name="github" onClick={onSocialClick}>
+          Log In with Github
+        </button>
       </div>
       {error}
       <span onClick={toggleAccount}>

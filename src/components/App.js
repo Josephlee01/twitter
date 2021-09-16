@@ -3,7 +3,6 @@ import AppRouter from "./AppRouter";
 import { authSvc } from "../fbase";
 
 function App() {
-  const currentUser = authSvc.currentUser;
   const [init, setInit] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
