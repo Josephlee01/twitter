@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { auth } from "../fbase";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +24,6 @@ const Auth = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const auth = getAuth();
     try {
       if (newAcc) {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -39,7 +38,6 @@ const Auth = () => {
   const toggleAccount = () => setNewAcc((prev) => !prev);
 
   const onSocialClick = async (e) => {
-    const auth = getAuth();
     try {
       if (e.target.name === "google") {
         const provider = new GoogleAuthProvider();

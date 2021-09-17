@@ -12,4 +12,4 @@ const firebaseConfig = {
 };
 
 initializeApp(firebaseConfig);
-export const authSvc = getAuth();
+export const auth = getAuth()

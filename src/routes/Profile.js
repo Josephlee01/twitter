@@ -1,9 +1,9 @@
 import React from 'react'
-import { authSvc } from '../fbase'
+import { auth } from "../fbase";
 
 const Profile = () => {
   const onLogOutClick = () => {
-    authSvc.signOut();
+    auth.signOut();
   }
   return (
     <div>
