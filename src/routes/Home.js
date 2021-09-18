@@ -7,8 +7,9 @@ import {
   addDoc,
   onSnapshot,
 } from "firebase/firestore";
+import Tweet from "../components/Tweet";
 
-const Home = ({ userObj }) => {
+const Home = ({ userObj, isOwner }) => {
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
 
@@ -50,9 +51,7 @@ const Home = ({ userObj }) => {
       </form>
       <div>
         {tweets.map((t) => (
-          <div key={t.id}>
-            <h4>{t.text}</h4>
-          </div>
+          <Tweet key={t.id} t={t} isOwner={t.authorId === userObj.uid} />
         ))}
       </div>
     </div>
