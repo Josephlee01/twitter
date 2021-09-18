@@ -9,14 +9,15 @@ import {
 } from "firebase/firestore";
 import Tweet from "../components/Tweet";
 
-const Home = ({ userObj, isOwner }) => {
+const Home = ({ userObj }) => {
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
+  const [attachment, setAttachment] = useState(null);
 
   useEffect(() => {
     const q = query(collection(db, "tweets"), orderBy("publishedDate", "desc"));
     onSnapshot(q, (snapshot) => {
-      const tweetArray =snapshot.docs.map((doc) => ({
+      const tweetArray = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
@@ -26,7 +27,7 @@ const Home = ({ userObj, isOwner }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const q = query(collection(db, "tweets"))
+    const q = query(collection(db, "tweets"));
     await addDoc(q, {
       text: tweet,
       authorId: userObj.uid,
@@ -37,6 +38,20 @@ const Home = ({ userObj, isOwner }) => {
   const onChange = (e) => {
     setTweet(e.target.value);
   };
+
+  const onFileChange = (e) => {
+    const uploadedFile = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = (e) => {
+      setAttachment(e.currentTarget.result);
+    };
+    reader.readAsDataURL(uploadedFile);
+  };
+
+  const onClearAttachement = () => {
+    setAttachment(null);
+  };
+
   return (
     <div>
       <form onSubmit={onSubmit}>
@@ -45,9 +60,16 @@ const Home = ({ userObj, isOwner }) => {
           onChange={onChange}
           type="text"
           placeholder="What's on your mind?"
-          maxLength={20}
+          maxLength={120}
         />
+        <input type="file" accept="image/*" onChange={onFileChange} />
         <input type="submit" value="Tweet" />
+        {attachment && (
+          <div>
+            <img alt="uploaded" src={attachment} width="200px" height="200px" />
+            <button onClick={onClearAttachement}>Clear</button>
+          </div>
+        )}
       </form>
       <div>
         {tweets.map((t) => (
