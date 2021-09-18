@@ -41,6 +41,7 @@ const Tweet = ({ t, isOwner }) => {
       ) : (
         <>
           <h4>{t.text}</h4>
+          {t.attachmentUrl && <img src={t.attachmentUrl} alt="attachment" width="150px" height="150px" /> }
           {isOwner && (
             <>
               <button onClick={onDelete}>Delete</button>

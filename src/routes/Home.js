@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../fbase";
+import { db, storage } from "../fbase";
 import {
   collection,
   query,
@@ -8,11 +8,13 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import Tweet from "../components/Tweet";
+import { v4 } from "uuid";
+import { ref, uploadString, getDownloadURL } from "firebase/storage";
 
 const Home = ({ userObj }) => {
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
-  const [attachment, setAttachment] = useState(null);
+  const [attachment, setAttachment] = useState("");
 
   useEffect(() => {
     const q = query(collection(db, "tweets"), orderBy("publishedDate", "desc"));
@@ -27,13 +29,22 @@ const Home = ({ userObj }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const q = query(collection(db, "tweets"));
-    await addDoc(q, {
+    let attachmentUrl = "";
+    if (attachment !== "") {
+      const fileRef = ref(storage, `${userObj.uid}/${v4()}`); //user별로 folder 분류
+      const response = await uploadString(fileRef, attachment, "data_url");
+      attachmentUrl = await getDownloadURL(response.ref);
+      console.log(attachmentUrl);
+    }
+    const tweetPosting = {
       text: tweet,
       authorId: userObj.uid,
       publishedDate: Date.now(),
-    });
+      attachmentUrl,
+    };
+    await addDoc(collection(db, "tweets"), tweetPosting);
     setTweet("");
+    setAttachment("");
   };
   const onChange = (e) => {
     setTweet(e.target.value);
