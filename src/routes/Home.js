@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { db, storage } from "../fbase";
 import {
   collection,
@@ -27,6 +27,8 @@ const Home = ({ userObj }) => {
     });
   }, []);
 
+  const fileInput = useRef();
+
   const onSubmit = async (e) => {
     e.preventDefault();
     let attachmentUrl = "";
@@ -45,6 +47,8 @@ const Home = ({ userObj }) => {
     await addDoc(collection(db, "tweets"), tweetPosting);
     setTweet("");
     setAttachment("");
+    fileInput.current.value = "";
+    
   };
   const onChange = (e) => {
     setTweet(e.target.value);
@@ -60,7 +64,8 @@ const Home = ({ userObj }) => {
   };
 
   const onClearAttachement = () => {
-    setAttachment(null);
+    fileInput.current.value = "";
+    setAttachment("")
   };
 
   return (
@@ -73,7 +78,12 @@ const Home = ({ userObj }) => {
           placeholder="What's on your mind?"
           maxLength={120}
         />
-        <input type="file" accept="image/*" onChange={onFileChange} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={onFileChange}
+          ref={fileInput}
+        />
         <input type="submit" value="Tweet" />
         {attachment && (
           <div>
