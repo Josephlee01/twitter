@@ -6,6 +6,7 @@ import { updateProfile } from "@firebase/auth";
 function App() {
   const [init, setInit] = useState(false);
   const [userObj, setUserObj] = useState(null);
+
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
@@ -13,16 +14,19 @@ function App() {
           displayName: user.displayName,
           uid: user.uid,
         });
+      } else {
+        setUserObj(null);
       }
       setInit(true);
     });
   }, []);
+
   const refreshUser = () => {
     const user = auth.currentUser;
     setUserObj({
       displayName: user.displayName,
       uid: user.uid,
-      updateProfile: () => updateProfile(user)
+      updateProfile: () => updateProfile(user),
     });
   };
   return (
