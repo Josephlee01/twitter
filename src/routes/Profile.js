@@ -1,9 +1,8 @@
-import { collection, getDoc, query, where } from "@firebase/firestore";
-import React, { useEffect } from "react";
-import { useState } from "react/cjs/react.development";
-import { auth, db } from "../fbase";
+import { useState } from "react";
+import { auth } from "../fbase";
+import { updateProfile } from "@firebase/auth";
 
-const Profile = ({ userObj }) => {
+const Profile = ({ refreshUser, userObj }) => {
   const onLogOutClick = () => {
     auth.signOut();
   };
@@ -17,25 +16,17 @@ const Profile = ({ userObj }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (userObj.displayName !== newDisplayName) {
-      await userObj.updateProfile({
+      await updateProfile(auth.currentUser, {
         displayName: newDisplayName,
       });
+      refreshUser();
     }
   };
-
-  // const getMyTweets = async () => {
-  //   const q = query(collection(db, "tweets"), where("authorId", "==", userObj.uid))
-  //   await getDoc(q)
-  // }
-
-  // useEffect(() => {
-  //   getMyTweets();
-  // })
 
   return (
     <div>
       <form onSubmit={onSubmit}>
-        <input type="text" placeholder="Display Name" />
+        <input type="text" placeholder="Display Name" onChange={onChange} />
         <input type="submit" value="Update Display Name" />
       </form>
       <button onClick={onLogOutClick}>Log Out</button>
